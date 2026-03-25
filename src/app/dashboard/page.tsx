@@ -41,11 +41,12 @@ export default async function DashboardPage() {
 
   const totalWinnings = verifiedWins?.reduce((sum, win) => sum + Number(win.prize_won), 0) || 0;
 
-  // 4. Fetch All Charity Payouts for Community Total
-  const { data: allPayouts } = await supabase
-    .from("charity_payouts")
-    .select("amount");
-  const communityTotal = allPayouts?.reduce((acc, p) => acc + Number(p.amount), 0) || 0;
+  // 4. Fetch Selected Charity Payouts for Context-Aware Total
+  const { data: charityPayouts } = profile?.charity_id 
+    ? await supabase.from("charity_payouts").select("amount").eq("charity_id", profile.charity_id)
+    : { data: [] as any[] };
+  
+  const charityTotal = charityPayouts?.reduce((acc, p) => acc + Number(p.amount), 0) || 0;
 
   // 5. Personal Charity Impact (Estimation)
   // Logic: $0.50 per month since subscription started (or account created as proxy)
@@ -191,8 +192,8 @@ export default async function DashboardPage() {
                 <span className="text-[10px] text-white/40 mb-1.5 uppercase tracking-tighter">Personal Impact</span>
               </div>
               <div className="flex items-end gap-2">
-                <span className="text-xl font-bold text-blue-400 font-mono">${communityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                <span className="text-[10px] text-white/40 mb-1 uppercase tracking-tighter">Community Total</span>
+                <span className="text-xl font-bold text-blue-400 font-mono">${charityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                <span className="text-[10px] text-white/40 mb-1 uppercase tracking-tighter">Raised for this Cause</span>
               </div>
             </div>
             
