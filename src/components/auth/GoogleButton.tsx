@@ -17,6 +17,9 @@ export function GoogleButton({ mode = "signin" }: { mode?: "signin" | "signup" }
         provider: "google",
         options: {
           redirectTo: `${getURL()}auth/callback`,
+          queryParams: {
+            prompt: 'select_account',
+          },
         },
       });
       if (error) throw error;
