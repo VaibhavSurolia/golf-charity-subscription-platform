@@ -45,7 +45,7 @@ export default async function AdminCharitiesPage() {
             <Plus size={18} className="text-emerald-400" /> Register Partner
           </h3>
 
-          <form action={registerCharity} className="space-y-5 relative z-10">
+          <form action={async (formData) => { await registerCharity(formData); }} className="space-y-5 relative z-10">
             <div className="space-y-2">
               <label className="text-xs font-bold text-white/40 uppercase tracking-widest pl-1">Charity Name</label>
               <input
