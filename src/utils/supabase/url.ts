@@ -8,7 +8,8 @@ export const getURL = () => {
   // Fallback for server-side usage (e.g. metadata or redirect in server context)
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? // Set this to your Vercel URL in environment variables
-    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Automatically set on Vercel
+    process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Manual Vercel URL
+    process?.env?.VERCEL_URL ?? // Automatically set by Vercel on server-side
     'http://localhost:3000/'
   
   // Make sure to include `https://` when not localhost.
