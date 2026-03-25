@@ -45,7 +45,7 @@ export default async function AdminCharitiesPage() {
             <Plus size={18} className="text-emerald-400" /> Register Partner
           </h3>
 
-          <form action={async (formData) => { await registerCharity(formData); }} className="space-y-5 relative z-10">
+          <form action={registerCharity as any} className="space-y-5 relative z-10">
             <div className="space-y-2">
               <label className="text-xs font-bold text-white/40 uppercase tracking-widest pl-1">Charity Name</label>
               <input
@@ -117,7 +117,7 @@ export default async function AdminCharitiesPage() {
                   </div>
                 </div>
 
-                <form action={async () => { "use server"; await deleteCharity(charity.id); }}>
+                <form action={deleteCharity.bind(null, charity.id) as any}>
                     <Button 
                         variant="ghost" 
                         className="h-10 w-10 p-0 text-white/20 hover:text-rose-400 hover:bg-rose-400/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all"

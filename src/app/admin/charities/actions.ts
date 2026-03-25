@@ -27,7 +27,7 @@ export async function registerCharity(formData: FormData) {
   return { success: true };
 }
 
-export async function deleteCharity(id: string) {
+export async function deleteCharity(id: string, _formData?: FormData) {
   const supabase = createAdminClient();
 
   const { error } = await supabase.from("charities").delete().eq("id", id);

@@ -92,7 +92,8 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
 
   if (drawError) return { error: drawError.message };
 
-  // --- PART 8: Proportional Charity Payouts ---
+  /* 
+  // --- PART 8: Proportional Charity Payouts (DISABLED: Moved to Verification Step) ---
   const { data: allCharities } = await supabase.from("charities").select("id");
   const charityCounts: Record<string, number> = {};
   let totalWithSelection = 0;
@@ -107,8 +108,6 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
   const payouts: { draw_id: string; charity_id: string; amount: number }[] = [];
   
   if (totalWithSelection > 0) {
-    // Distribute proportionally to those with selection
-    // (Wait, what about those without selection? I'll distribute their share equally among all partners)
     const portionPerUser = charityPool / subscribers.length;
     const unselectedShare = (subscribers.length - totalWithSelection) * portionPerUser;
     
@@ -123,7 +122,6 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
         });
     });
   } else {
-    // Split equally among all charities if no one has selected yet
     const share = charityPool / (allCharities?.length || 1);
     allCharities?.forEach(c => {
         payouts.push({
@@ -138,6 +136,7 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
     await supabase.from("charity_payouts").insert(payouts);
   }
   // --- END PART 8 ---
+  */
 
   // 8. Calculate Match Counts for all subscribers
   const winnersList: { user_id: string; match_count: number; prize_won: number }[] = [];
