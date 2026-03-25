@@ -16,7 +16,7 @@ export default async function DashboardPage() {
   // Fetch the user's profile and charity
   const { data: profile } = await supabase
     .from("users")
-    .select("subscription_status, name, charity_id, charities(name, description)")
+    .select("subscription_status, name, charity_id, created_at, charities(name, description)")
     .eq("id", user.id)
     .single();
 
@@ -40,11 +40,19 @@ export default async function DashboardPage() {
     .eq("verification_status", "verified");
 
   const totalWinnings = verifiedWins?.reduce((sum, win) => sum + Number(win.prize_won), 0) || 0;
-  
-  // 5. Personal Charity Impact (10% of their subscription + 10% of match prizes is usually pool-based, 
-  // but let's show their personal subscription contribution: $0.50/month)
-  // For this demo, let's assume they've contributed $0.50 for the current month if active.
-  const personalImpact = (isSubscribed ? 0.50 : 0) + (totalWinnings * 0.1); 
+
+  // 4. Fetch All Charity Payouts for Community Total
+  const { data: allPayouts } = await supabase
+    .from("charity_payouts")
+    .select("amount");
+  const communityTotal = allPayouts?.reduce((acc, p) => acc + Number(p.amount), 0) || 0;
+
+  // 5. Personal Charity Impact (Estimation)
+  // Logic: $0.50 per month since subscription started (or account created as proxy)
+  const createdDate = new Date(profile?.created_at || Date.now());
+  const now = new Date();
+  const monthsActive = Math.max(1, (now.getFullYear() - createdDate.getFullYear()) * 12 + now.getMonth() - createdDate.getMonth() + 1);
+  const personalImpact = monthsActive * 0.50;
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -177,9 +185,15 @@ export default async function DashboardPage() {
           <div className="relative z-10">
             <h3 className="text-lg font-semibold mb-2">Charity Impact</h3>
             <p className="text-sm text-white/60 mb-2">Your impact so far:</p>
-            <div className="flex items-end gap-2 mb-6">
-              <span className="text-3xl font-black text-emerald-400 font-mono">${personalImpact.toFixed(2)}</span>
-              <span className="text-[10px] text-white/40 mb-1.5 uppercase tracking-tighter">Total Contribution</span>
+            <div className="flex flex-col gap-1 mb-6">
+              <div className="flex items-end gap-2">
+                <span className="text-3xl font-black text-emerald-400 font-mono">${personalImpact.toFixed(2)}</span>
+                <span className="text-[10px] text-white/40 mb-1.5 uppercase tracking-tighter">Personal Impact</span>
+              </div>
+              <div className="flex items-end gap-2">
+                <span className="text-xl font-bold text-blue-400 font-mono">${communityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                <span className="text-[10px] text-white/40 mb-1 uppercase tracking-tighter">Community Total</span>
+              </div>
             </div>
             
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
