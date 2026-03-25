@@ -8,6 +8,7 @@ import {
   LogOut, 
   Server,
   CreditCard,
+  DollarSign,
   X // For closing mobile menu
 } from "lucide-react";
 import { logout } from "@/app/(website)/auth/actions";
@@ -35,6 +36,7 @@ export async function DashboardSidebar({ onClose, className }: SidebarProps) {
     { name: "Monthly Results", href: "/dashboard/results", icon: <Trophy size={20} /> },
     { name: "My Charity", href: "/dashboard/charity", icon: <Heart size={20} /> },
     { name: "Subscription", href: "/dashboard/subscription", icon: <CreditCard size={20} /> },
+    { name: "Payout History", href: "/dashboard/payouts", icon: <DollarSign size={20} /> },
     ...(isAdmin ? [{ name: "Admin Panel", href: "/admin", icon: <Server size={20} className="text-rose-400" /> }] : []),
   ];
 

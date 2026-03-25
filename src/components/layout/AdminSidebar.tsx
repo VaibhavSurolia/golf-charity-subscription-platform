@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, LayoutDashboard, ShieldAlert, Heart, LogOut, X } from "lucide-react";
+import { Users, LayoutDashboard, ShieldAlert, Heart, LogOut, X, Banknote } from "lucide-react";
 import { logout } from "@/app/(website)/auth/actions";
 
 interface AdminSidebarProps {
@@ -12,6 +12,7 @@ export function AdminSidebar({ onClose, className }: AdminSidebarProps) {
     { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={20} /> },
     { name: "Users", href: "/admin/users", icon: <Users size={20} /> },
     { name: "Charities", href: "/admin/charities", icon: <Heart size={20} /> },
+    { name: "Platform Payouts", href: "/admin/payouts", icon: <Banknote size={20} /> },
   ];
 
   return (
