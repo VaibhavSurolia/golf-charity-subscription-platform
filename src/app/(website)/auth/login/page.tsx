@@ -2,11 +2,30 @@
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { GoogleButton } from "@/components/auth/GoogleButton";
 import Link from "next/link";
 import { login } from "../actions";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useFormStatus } from "react-dom";
+import { Loader2 } from "lucide-react";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button 
+      type="submit" 
+      disabled={pending}
+      className="w-full font-bold h-12"
+    >
+      {pending ? (
+        <Loader2 className="animate-spin" size={20} />
+      ) : (
+        "Sign In"
+      )}
+    </Button>
+  );
+}
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -29,14 +48,6 @@ function LoginForm() {
             </div>
           )}
           
-          <GoogleButton mode="signin" />
-          
-          <div className="flex items-center gap-4 my-6">
-            <div className="h-px bg-white/10 flex-1" />
-            <span className="text-white/40 text-sm font-medium">or continue with email</span>
-            <div className="h-px bg-white/10 flex-1" />
-          </div>
-
           <form action={login} className="space-y-4 text-left">
             <div>
               <label className="text-sm font-medium text-white/70 block mb-1">Email Address</label>
@@ -59,7 +70,7 @@ function LoginForm() {
               />
             </div>
             <div className="pt-4">
-              <Button type="submit" className="w-full block">Sign In</Button>
+              <SubmitButton />
             </div>
           </form>
 

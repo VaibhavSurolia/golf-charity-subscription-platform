@@ -7,7 +7,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 async function getRedirectUrl(userId: string) {
   const adminClient = createAdminClient();
-  
+
   const { data: profile, error } = await adminClient
     .from("users")
     .select("role")
@@ -21,7 +21,7 @@ async function getRedirectUrl(userId: string) {
 
   const role = profile?.role?.toLowerCase();
   console.log(`[Auth] SUCCESS: User ${userId} has role: ${role}. Redirecting...`);
-  
+
   return role === "admin" ? "/admin" : "/dashboard";
 }
 
@@ -51,9 +51,9 @@ export async function signup(formData: FormData) {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     options: {
-        data: {
-          full_name: formData.get('name') as string,
-        }
+      data: {
+        full_name: formData.get('name') as string,
+      }
     }
   }
 
@@ -69,7 +69,7 @@ export async function signup(formData: FormData) {
 }
 
 export async function logout() {
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-    redirect('/auth/login');
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect('/auth/login');
 }

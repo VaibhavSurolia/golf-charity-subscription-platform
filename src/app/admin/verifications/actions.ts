@@ -37,11 +37,18 @@ export async function verifyWinner(winnerId: string, status: 'verified' | 'rejec
         // 3. Insert 10% Match into charity_payouts
         const charityMatch = Number((Number(winner.prize_won) * 0.10).toFixed(2));
         
-        await supabase.from("charity_payouts").insert({
+        console.log(`[AdminVerify] Recording charity match of ₹${charityMatch} for user ${winner.user_id} and charity ${user.charity_id}`);
+
+        const { error: pErr } = await supabase.from("charity_payouts").insert({
           charity_id: user.charity_id,
+          user_id: winner.user_id,
           draw_id: winner.draw_id,
           amount: charityMatch
         });
+
+        if (pErr) console.error(`[AdminVerify] FAILED to record charity payout:`, pErr.message);
+      } else {
+        console.warn(`[AdminVerify] No charity_id found for user ${winner.user_id}, skipping payout record.`);
       }
     }
   }

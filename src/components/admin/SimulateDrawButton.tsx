@@ -23,7 +23,7 @@ export function SimulateDrawButton() {
     if (manualMode) {
       numbers = manualNumbers.map(n => parseInt(n)).filter(n => !isNaN(n));
       const uniqueNumbers = new Set(numbers);
-      
+
       if (numbers.length !== 5) {
         toast.error("Please enter 5 numbers for manual draw.");
         return;
@@ -43,7 +43,7 @@ export function SimulateDrawButton() {
       const result = await processMonthlyDraw(numbers);
       if (result.success) {
         toast.success("Draw Completed!", {
-          description: `Winning Numbers: ${result.numbers.join(", ")}. Found ${result.winnersCount} winners. Total Pool: $${result.pool.toLocaleString()}`,
+          description: `Winning Numbers: ${result.numbers.join(", ")}. Found ${result.winnersCount} winners. Total Pool: ₹${result.pool.toLocaleString()}`,
           icon: <Sparkles className="text-emerald-400" />,
           duration: 10000,
         });
@@ -77,7 +77,7 @@ export function SimulateDrawButton() {
                 className="w-10 h-10 bg-black border border-white/20 rounded-lg text-center font-bold text-sm focus:border-rose-500 outline-none transition-colors"
               />
             ))}
-            <button 
+            <button
               onClick={() => setManualMode(false)}
               className="p-2 text-white/40 hover:text-white"
             >
@@ -86,7 +86,7 @@ export function SimulateDrawButton() {
           </div>
         )}
 
-        <Button 
+        <Button
           onClick={() => setManualMode(!manualMode)}
           variant="outline"
           className={`px-3 border-white/10 ${manualMode ? "bg-white/10" : ""}`}
@@ -95,7 +95,7 @@ export function SimulateDrawButton() {
           <Settings2 size={16} />
         </Button>
 
-        <Button 
+        <Button
           onClick={handleSimulate}
           disabled={loading}
           className="bg-rose-500 hover:bg-rose-600 text-white gap-2 border-0 shadow-lg shadow-rose-500/20 px-6"
@@ -104,7 +104,7 @@ export function SimulateDrawButton() {
           {loading ? "Processing..." : manualMode ? "Run Manual Draw" : "Simulate Random Draw"}
         </Button>
       </div>
-      
+
       {manualMode && (
         <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
           Manual Override Enabled (Test Mode)

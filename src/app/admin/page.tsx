@@ -33,7 +33,7 @@ export default async function AdminPage() {
     .select("*", { count: 'exact', head: true })
     .eq("subscription_status", "active");
   
-  const monthlyRevenue = (activeSubs || 0) * 5;
+  const monthlyRevenue = (activeSubs || 0) * 1699;
 
   // 3. Fetch Current Jackpot
   const { data: stats } = await supabase
@@ -85,7 +85,7 @@ export default async function AdminPage() {
             <div className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-full font-bold">LIVE</div>
           </div>
           <p className="text-xs text-white/40 uppercase tracking-widest font-bold">Est. Monthly Revenue</p>
-          <h3 className="text-3xl font-black mt-1 text-emerald-400">${monthlyRevenue.toLocaleString()}</h3>
+          <h3 className="text-3xl font-black mt-1 text-emerald-400">₹{monthlyRevenue.toLocaleString()}</h3>
         </Card>
 
         <Card className="p-6 bg-white/[0.02] border-white/5 backdrop-blur-md animate-fade-in-up glass-hover" style={{ animationDelay: '0.3s' }}>
@@ -95,7 +95,7 @@ export default async function AdminPage() {
             </div>
           </div>
           <p className="text-xs text-white/40 uppercase tracking-widest font-bold">Current Jackpot Pool</p>
-          <h3 className="text-3xl font-black mt-1 text-purple-400">${currentJackpot.toLocaleString()}</h3>
+          <h3 className="text-3xl font-black mt-1 text-purple-400">₹{currentJackpot.toLocaleString()}</h3>
         </Card>
 
         {/* NEW VERIFICATION STAT */}
@@ -127,7 +127,7 @@ export default async function AdminPage() {
              <h2 className="text-xl font-bold">Platform User Management</h2>
           </div>
           <div className="rounded-3xl border border-white/5 overflow-hidden">
-            <AdminUserList />
+            <AdminUserList limit={3} />
           </div>
         </div>
 

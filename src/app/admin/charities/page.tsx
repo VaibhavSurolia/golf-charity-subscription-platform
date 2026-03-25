@@ -101,7 +101,7 @@ export default async function AdminCharitiesPage() {
                     <h4 className="font-bold text-lg">{charity.name}</h4>
                     <div className="flex items-center gap-3 mt-0.5">
                       <p className="text-xs text-emerald-400 font-bold tracking-tight">
-                        Total Raised: ${charity.totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        Total Raised: ₹{charity.totalRaised.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </p>
                       {charity.website && (
                         <a 

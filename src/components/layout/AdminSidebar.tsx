@@ -1,13 +1,12 @@
 import Link from "next/link";
-import { Users, ServerIcon, DollarSign, LayoutDashboard, ShieldAlert, Heart } from "lucide-react";
+import { Users, ServerIcon, DollarSign, LayoutDashboard, ShieldAlert, Heart, LogOut } from "lucide-react";
+import { logout } from "@/app/(website)/auth/actions";
 
 export function AdminSidebar() {
   const links = [
     { name: "Dashboard", href: "/admin", icon: <LayoutDashboard size={20} /> },
     { name: "Users", href: "/admin/users", icon: <Users size={20} /> },
-    { name: "Draw Engine", href: "/admin/draw", icon: <ServerIcon size={20} /> },
     { name: "Charities", href: "/admin/charities", icon: <Heart size={20} /> },
-    { name: "Payouts", href: "/admin/payouts", icon: <DollarSign size={20} /> },
   ];
 
   return (
@@ -27,6 +26,17 @@ export function AdminSidebar() {
           </Link>
         ))}
       </nav>
+      <div className="border-t border-white/10 pt-4 mt-auto">
+        <form action={logout}>
+          <button
+            type="submit"
+            className="flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-rose-400/70 transition-colors hover:bg-rose-500/20 hover:text-rose-400"
+          >
+            <LogOut size={20} />
+            Sign Out
+          </button>
+        </form>
+      </div>
     </aside>
   );
 }

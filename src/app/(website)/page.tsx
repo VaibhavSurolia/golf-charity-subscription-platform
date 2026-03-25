@@ -30,7 +30,7 @@ export default function Home() {
 
       <main className="relative z-10 px-6 max-w-7xl mx-auto pt-20 pb-32">
         {/* HERO SECTION */}
-        <motion.section 
+        <motion.section
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
@@ -41,15 +41,15 @@ export default function Home() {
               Elevating the game. Empowering the world.
             </span>
           </motion.div>
-          
+
           <motion.h1 variants={fadeIn} className="max-w-4xl text-5xl md:text-7xl font-bold tracking-tight mb-8 leading-tight">
             Play. Win. <span className="italic font-light text-white/70">Donate.</span>
           </motion.h1>
-          
+
           <motion.p variants={fadeIn} className="max-w-2xl text-lg md:text-xl text-white/60 mb-12 leading-relaxed">
             The exclusive subscription platform that transforms your scorecard into real-world impact. Win premium prizes while supporting charities that matter.
           </motion.p>
-          
+
           <motion.div variants={fadeIn} className="flex flex-col sm:flex-row items-center gap-4">
             <Link href="/auth/signup">
               <Button size="lg" className="w-full sm:w-auto min-w-[200px] gap-2">
@@ -66,7 +66,7 @@ export default function Home() {
 
         {/* HOW IT WORKS */}
         <section id="how-it-works" className="py-24">
-          <motion.div 
+          <motion.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
@@ -74,20 +74,20 @@ export default function Home() {
             className="grid md:grid-cols-3 gap-8"
           >
             {[
-              { 
-                icon: <Target className="w-8 h-8 text-emerald-400 mb-6" />, 
-                title: "1. Play Your Game", 
-                desc: "Subscribe and submit up to 5 of your latest scores. Our algorithm tracks your performance seamlessly." 
+              {
+                icon: <Target className="w-8 h-8 text-emerald-400 mb-6" />,
+                title: "1. Play Your Game",
+                desc: "Subscribe and submit up to 5 of your latest scores. Our algorithm tracks your performance seamlessly."
               },
-              { 
-                icon: <Trophy className="w-8 h-8 text-purple-400 mb-6" />, 
-                title: "2. Monthly Draw", 
-                desc: "Match your numbers against our automated monthly pulls. Jackpots roll over, building massive prize pools." 
+              {
+                icon: <Trophy className="w-8 h-8 text-purple-400 mb-6" />,
+                title: "2. Monthly Draw",
+                desc: "Match your numbers against our automated monthly pulls. Jackpots roll over, building massive prize pools."
               },
-              { 
-                icon: <Heart className="w-8 h-8 text-rose-400 mb-6" />, 
-                title: "3. Direct Impact", 
-                desc: "A guaranteed percentage of every subscription goes directly to your chosen charity. You win, they win." 
+              {
+                icon: <Heart className="w-8 h-8 text-rose-400 mb-6" />,
+                title: "3. Direct Impact",
+                desc: "A guaranteed percentage of every subscription goes directly to your chosen charity. You win, they win."
               }
             ].map((step, i) => (
               <motion.div key={i} variants={fadeIn}>
@@ -103,17 +103,17 @@ export default function Home() {
 
         {/* CURRENT IMPACT STATS */}
         <section className="py-24">
-          <motion.div 
-             initial="hidden"
-             whileInView="visible"
-             viewport={{ once: true }}
-             variants={fadeIn}
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeIn}
           >
             <Card className="p-12 text-center relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-indigo-500/10 to-purple-500/10" />
               <div className="relative z-10 grid md:grid-cols-3 gap-12">
                 <div>
-                  <div className="text-5xl font-bold tracking-tighter mb-2">$142.5K</div>
+                  <div className="text-5xl font-bold tracking-tighter mb-2">₹142.5K</div>
                   <div className="text-sm font-medium uppercase tracking-widest text-white/50">Current Jackpot</div>
                 </div>
                 <div className="md:border-l md:border-r border-white/10">
@@ -121,7 +121,7 @@ export default function Home() {
                   <div className="text-sm font-medium uppercase tracking-widest text-white/50">Active Charities</div>
                 </div>
                 <div>
-                  <div className="text-5xl font-bold tracking-tighter mb-2">$850K+</div>
+                  <div className="text-5xl font-bold tracking-tighter mb-2">₹850K+</div>
                   <div className="text-sm font-medium uppercase tracking-widest text-white/50">Donated to Date</div>
                 </div>
               </div>

@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 export async function processMonthlyDraw(manualNumbers?: number[]) {
   const authClient = await createClient();
   const supabase = await createAdminClient();
-  
+
   // 1. Verification: Admin only (using standard client for user session)
   const { data: { user } } = await authClient.auth.getUser();
   if (!user) throw new Error("Unauthorized: No session found.");
@@ -23,7 +23,7 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
   }
 
   // 2. Constants
-  const TICKET_PRICE = 20.00;
+  const TICKET_PRICE = 1699.00;
   const CHARITY_PERCENT = 0.10;
   const TIERS = {
     MATCH_5: 0.70, // 70% of prize pool
@@ -54,14 +54,14 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
   // 5. Calculate Pools
   const totalRevenue = subscribers.length * TICKET_PRICE;
   const charityPool = totalRevenue * CHARITY_PERCENT;
-  const prizePool = totalRevenue - charityPool; 
-  
+  const prizePool = totalRevenue - charityPool;
+
   // Total Jackpot = (70% of current pool) + (Carried over from last month)
   const currentJackpotPool = (prizePool * TIERS.MATCH_5) + previousRollover;
 
   // 6. Generate Winning Numbers (Manual override or 5 random from 1-45)
   let winningNumbers: number[] = [];
-  
+
   if (manualNumbers && manualNumbers.length === 5) {
     winningNumbers = manualNumbers;
     console.log(`[Draw] Using MANUAL winning numbers: ${winningNumbers.join(", ")}`);
@@ -152,7 +152,7 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
     if (!scores || scores.length === 0) continue;
 
     const userScores = Array.from(new Set(scores.map(s => s.score))); // Unique user scores
-    
+
     // Count how many of the WINNING NUMBERS the user has
     const matchCount = winningNumbers.filter(winNum => userScores.includes(winNum)).length;
 
@@ -188,7 +188,7 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
     if (w.match_count === 5 && tierCounts[5] > 0) prize = currentJackpotPool / tierCounts[5];
     if (w.match_count === 4 && tierCounts[4] > 0) prize = (prizePool * TIERS.MATCH_4) / tierCounts[4];
     if (w.match_count === 3 && tierCounts[3] > 0) prize = (prizePool * TIERS.MATCH_3) / tierCounts[3];
-    return { 
+    return {
       draw_id: draw.id,
       user_id: w.user_id,
       match_count: w.match_count,
@@ -204,9 +204,9 @@ export async function processMonthlyDraw(manualNumbers?: number[]) {
   revalidatePath("/dashboard/results");
   revalidatePath("/admin");
 
-  return { 
-    success: true, 
-    numbers: winningNumbers, 
+  return {
+    success: true,
+    numbers: winningNumbers,
     winnersCount: finalWinners.length,
     pool: prizePool + previousRollover,
     jackpot: currentJackpotPool,

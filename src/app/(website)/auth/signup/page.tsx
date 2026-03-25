@@ -2,11 +2,30 @@
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { GoogleButton } from "@/components/auth/GoogleButton";
 import Link from "next/link";
 import { signup } from "../actions";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useFormStatus } from "react-dom";
+import { Loader2 } from "lucide-react";
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <Button 
+      type="submit" 
+      disabled={pending}
+      className="w-full bg-white hover:bg-gray-100 text-black font-bold h-12 transition-all duration-300"
+    >
+      {pending ? (
+        <Loader2 className="animate-spin" size={20} />
+      ) : (
+        "Create Account"
+      )}
+    </Button>
+  );
+}
 
 function SignupForm() {
     const searchParams = useSearchParams();
@@ -29,14 +48,6 @@ function SignupForm() {
             </div>
           )}
           
-          <GoogleButton mode="signup" />
-          
-          <div className="flex items-center gap-4 my-6">
-            <div className="h-px bg-white/10 flex-1" />
-            <span className="text-white/40 text-sm font-medium">or continue with email</span>
-            <div className="h-px bg-white/10 flex-1" />
-          </div>
-
           <form action={signup} className="space-y-4 text-left">
             <div>
               <label className="text-sm font-medium text-white/70 block mb-1">Full Name</label>
@@ -70,9 +81,7 @@ function SignupForm() {
             </div>
             
             <div className="pt-4">
-              <Button type="submit" className="w-full block bg-white hover:bg-white text-black bg-gradient-to-r hover:from-purple-500 hover:to-rose-500 hover:text-white transition-all duration-300">
-                  Create Account
-              </Button>
+              <SubmitButton />
             </div>
           </form>
 

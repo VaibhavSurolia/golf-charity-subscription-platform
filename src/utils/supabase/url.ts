@@ -11,7 +11,7 @@ export const getURL = () => {
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? // Manual Vercel URL
     process?.env?.VERCEL_URL ?? // Automatically set by Vercel on server-side
     'http://localhost:3000/'
-  
+
   // Make sure to include `https://` when not localhost.
   url = url.includes('http') ? url : `https://${url}`
   // Make sure to include a trailing `/`.

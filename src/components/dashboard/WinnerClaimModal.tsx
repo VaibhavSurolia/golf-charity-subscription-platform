@@ -43,7 +43,7 @@ export function WinnerClaimModal({ winnerId }: { winnerId: string }) {
 
       // 3. Submit Claim via Server Action
       await submitClaim(winnerId, publicUrl);
-      
+
       setDone(true);
     } catch (err: any) {
       console.error(err);
@@ -80,32 +80,32 @@ export function WinnerClaimModal({ winnerId }: { winnerId: string }) {
       </div>
 
       <div className="space-y-4">
-        <div 
+        <div
           className={`h-48 rounded-2xl border-2 border-dashed flex flex-col items-center justify-center transition-all ${
             file ? "border-emerald-500/40 bg-emerald-500/5" : "border-white/10 hover:border-white/20 hover:bg-white/5"
           }`}
         >
           {file ? (
             <div className="text-center p-4">
-               <Check size={32} className="text-emerald-400 mx-auto mb-2" />
-               <p className="text-sm font-medium text-white/80">{file.name}</p>
-               <button onClick={() => setFile(null)} className="text-[10px] text-rose-400 uppercase tracking-widest mt-2 hover:underline">Remove</button>
+              <Check size={32} className="text-emerald-400 mx-auto mb-2" />
+              <p className="text-sm font-medium text-white/80">{file.name}</p>
+              <button onClick={() => setFile(null)} className="text-[10px] text-rose-400 uppercase tracking-widest mt-2 hover:underline">Remove</button>
             </div>
           ) : (
             <>
-              <input 
-                type="file" 
-                id="proof-upload" 
-                className="hidden" 
+              <input
+                type="file"
+                id="proof-upload"
+                className="hidden"
                 accept="image/*"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
               />
               <label htmlFor="proof-upload" className="flex flex-col items-center cursor-pointer group">
-                 <div className="h-12 w-12 rounded-full bg-white/5 group-hover:bg-white/10 flex items-center justify-center mb-3 transition-colors">
-                    <Upload size={20} className="text-white/40" />
-                 </div>
-                 <p className="text-sm font-medium">Click to upload photo</p>
-                 <p className="text-[10px] text-white/20 mt-1 uppercase tracking-tighter">JPEG, PNG up to 5MB</p>
+                <div className="h-12 w-12 rounded-full bg-white/5 group-hover:bg-white/10 flex items-center justify-center mb-3 transition-colors">
+                  <Upload size={20} className="text-white/40" />
+                </div>
+                <p className="text-sm font-medium">Click to upload photo</p>
+                <p className="text-[10px] text-white/20 mt-1 uppercase tracking-tighter">JPEG, PNG up to 5MB</p>
               </label>
             </>
           )}
@@ -117,7 +117,7 @@ export function WinnerClaimModal({ winnerId }: { winnerId: string }) {
           </div>
         )}
 
-        <Button 
+        <Button
           onClick={handleUpload}
           disabled={!file || uploading}
           className="w-full h-12 font-bold gap-2"

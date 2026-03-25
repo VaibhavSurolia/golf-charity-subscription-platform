@@ -1,12 +1,16 @@
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Trophy, Target, ArrowRight, Heart, Lock } from "lucide-react";
+import { Trophy, Target, ArrowRight, Heart, Lock, Server } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const supabase = await createClient();
+  const adminSupabase = await createAdminClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
@@ -16,13 +20,16 @@ export default async function DashboardPage() {
   // Fetch the user's profile and charity
   const { data: profile } = await supabase
     .from("users")
-    .select("subscription_status, name, charity_id, created_at, charities(name, description)")
+    .select("subscription_status, name, role, charity_id, created_at, charities(name, description)")
     .eq("id", user.id)
     .single();
-
+    
+  const isAdmin = profile?.role?.toLowerCase() === "admin";
   const isSubscribed = profile?.subscription_status === "active";
   const firstName = profile?.name?.split(" ")[0] || "Golfer";
   const selectedCharity = profile?.charities as any;
+
+  const now = new Date();
 
   // 3. Fetch scores
   const { data: scores } = await supabase
@@ -41,19 +48,31 @@ export default async function DashboardPage() {
 
   const totalWinnings = verifiedWins?.reduce((sum, win) => sum + Number(win.prize_won), 0) || 0;
 
-  // 4. Fetch Selected Charity Payouts for Context-Aware Total
-  const { data: charityPayouts } = profile?.charity_id 
-    ? await supabase.from("charity_payouts").select("amount").eq("charity_id", profile.charity_id)
-    : { data: [] as any[] };
-  
-  const charityTotal = charityPayouts?.reduce((acc, p) => acc + Number(p.amount), 0) || 0;
+  // 4. Dashboard Personal Query (FINAL)
+  // Use adminSupabase to ensure visibility of all records matching this user/charity
+  const { data: personalPayouts } = profile?.charity_id
+    ? await adminSupabase
+        .from("charity_payouts")
+        .select("amount")
+        .eq("user_id", user.id)
+        .eq("charity_id", profile.charity_id)
+    : { data: [] };
 
-  // 5. Personal Charity Impact (Estimation)
-  // Logic: $0.50 per month since subscription started (or account created as proxy)
-  const createdDate = new Date(profile?.created_at || Date.now());
-  const now = new Date();
-  const monthsActive = Math.max(1, (now.getFullYear() - createdDate.getFullYear()) * 12 + now.getMonth() - createdDate.getMonth() + 1);
-  const personalImpact = monthsActive * 0.50;
+  const recordedPersonalImpact = personalPayouts?.reduce((acc, p) => acc + Number(p.amount), 0) || 0;
+  
+  // 5. Personal Charity Impact (Current Month + Records)
+  // Logic: Only pulling from the ledger for truth
+  const personalImpact = recordedPersonalImpact;
+
+  // 6. Overall Raised for the currently Selected cause
+  const { data: causePayouts } = profile?.charity_id 
+    ? await adminSupabase
+        .from("charity_payouts")
+        .select("amount")
+        .eq("charity_id", profile.charity_id)
+    : { data: [] };
+
+  const charityTotal = causePayouts?.reduce((acc, p) => acc + Number(p.amount), 0) || 0;
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -63,20 +82,30 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-bold tracking-tight">Welcome back, {firstName}</h1>
           <p className="text-white/60 mt-1">Here is your current standing for the upcoming draw.</p>
         </div>
-        
-        {isSubscribed ? (
-          <Link href="/dashboard/scores">
-            <Button className="gap-2 bg-emerald-500 hover:bg-emerald-400 text-black border-none">
-              Add Score <ArrowRight size={16}/>
-            </Button>
-          </Link>
-        ) : (
-          <Link href="/pricing">
-             <Button variant="outline" className="gap-2 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10">
-               <Lock size={16}/> Subscribe to Add Score
-             </Button>
-          </Link>
-        )}
+
+        <div className="flex items-center gap-3">
+          {isAdmin && (
+            <Link href="/admin">
+              <Button variant="outline" className="gap-2 border-rose-500/50 text-rose-400 hover:bg-rose-500/10">
+                <Server size={16} /> Admin Console
+              </Button>
+            </Link>
+          )}
+          
+          {isSubscribed ? (
+            <Link href="/dashboard/scores">
+              <Button className="gap-2 bg-emerald-500 hover:bg-emerald-400 text-black border-none">
+                Add Score <ArrowRight size={16} />
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/pricing">
+              <Button variant="outline" className="gap-2 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10">
+                <Lock size={16} /> Subscribe to Add Score
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-4">
@@ -88,11 +117,11 @@ export default async function DashboardPage() {
             </div>
             <div>
               <p className="text-sm text-white/60">Total Winnings</p>
-              <h3 className="text-2xl font-bold">${totalWinnings.toLocaleString()}</h3>
+              <h3 className="text-2xl font-bold">₹{totalWinnings.toLocaleString()}</h3>
             </div>
           </div>
         </Card>
-        
+
         <Card className="p-6">
           <div className="flex items-center gap-4 mb-4">
             <div className="p-3 rounded-full bg-indigo-500/20 text-indigo-400">
@@ -140,16 +169,16 @@ export default async function DashboardPage() {
               </Link>
             )}
           </div>
-          
+
           {!isSubscribed ? (
-             <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-20 flex items-center justify-center flex-col text-center rounded-2xl">
-                <Lock size={48} className="text-white/20 mb-4" />
-                <h4 className="text-lg font-medium mb-2">Scores Locked</h4>
-                <p className="text-sm text-white/60 max-w-sm mb-6">You need an active subscription to submit your golf scores and match against the monthly draw.</p>
-                <Link href="/pricing">
-                  <Button className="bg-white text-black hover:bg-gray-200">View Impact Plans</Button>
-                </Link>
-             </div>
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-20 flex items-center justify-center flex-col text-center rounded-2xl">
+              <Lock size={48} className="text-white/20 mb-4" />
+              <h4 className="text-lg font-medium mb-2">Scores Locked</h4>
+              <p className="text-sm text-white/60 max-w-sm mb-6">You need an active subscription to submit your golf scores and match against the monthly draw.</p>
+              <Link href="/pricing">
+                <Button className="bg-white text-black hover:bg-gray-200">View Impact Plans</Button>
+              </Link>
+            </div>
           ) : scores && scores.length > 0 ? (
             <div className="space-y-4">
               {scores.map((score, i) => (
@@ -169,11 +198,11 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center text-center h-[200px] text-white/40">
-                <Target size={48} className="mb-4 opacity-50" />
-                <p>No active scores recorded yet.</p>
-                <Link href="/dashboard/scores" className="mt-4">
-                  <Button variant="secondary" size="sm">Add your first score</Button>
-                </Link>
+              <Target size={48} className="mb-4 opacity-50" />
+              <p>No active scores recorded yet.</p>
+              <Link href="/dashboard/scores" className="mt-4">
+                <Button variant="secondary" size="sm">Add your first score</Button>
+              </Link>
             </div>
           )}
         </Card>
@@ -188,15 +217,15 @@ export default async function DashboardPage() {
             <p className="text-sm text-white/60 mb-2">Your impact so far:</p>
             <div className="flex flex-col gap-1 mb-6">
               <div className="flex items-end gap-2">
-                <span className="text-3xl font-black text-emerald-400 font-mono">${personalImpact.toFixed(2)}</span>
+                <span className="text-3xl font-black text-emerald-400 font-mono">₹{personalImpact.toFixed(2)}</span>
                 <span className="text-[10px] text-white/40 mb-1.5 uppercase tracking-tighter">Personal Impact</span>
               </div>
               <div className="flex items-end gap-2">
-                <span className="text-xl font-bold text-blue-400 font-mono">${charityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                <span className="text-xl font-bold text-blue-400 font-mono">₹{charityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
                 <span className="text-[10px] text-white/40 mb-1 uppercase tracking-tighter">Raised for this Cause</span>
               </div>
             </div>
-            
+
             <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
               {selectedCharity ? (
                 <>
@@ -211,7 +240,7 @@ export default async function DashboardPage() {
               )}
             </div>
           </div>
-          
+
           <Link href="/dashboard/charity">
             <Button variant="outline" className="w-full relative z-10 border-white/10 hover:bg-white/10 h-11">
               {selectedCharity ? "Change Charity" : "Select a Charity"}

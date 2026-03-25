@@ -22,7 +22,7 @@ export async function DashboardSidebar() {
     .eq("id", user?.id)
     .single();
 
-  const isAdmin = profile?.role === "admin";
+  const isAdmin = profile?.role?.toLowerCase() === "admin";
 
   const links = [
     { name: "Home", href: "/dashboard", icon: <LayoutDashboard size={20} /> },

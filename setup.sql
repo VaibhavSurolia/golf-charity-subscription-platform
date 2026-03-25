@@ -77,7 +77,7 @@ WITH CHECK (auth.uid() = user_id);
 -- Note: Create the profiles table that extends auth.users
 
 CREATE TABLE IF NOT EXISTS public.users (
-  id UUID REFERENCES auth.users(id) PRIMARY KEY,
+  id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   role TEXT DEFAULT 'user' CHECK (role IN ('user', 'admin')),
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS public.winners (
 
 -- Ensure relationship exists for existing tables
 ALTER TABLE public.winners DROP CONSTRAINT IF EXISTS winners_user_id_fkey;
-ALTER TABLE public.winners ADD CONSTRAINT winners_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+ALTER TABLE public.winners ADD CONSTRAINT winners_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 NOTIFY pgrst, 'reload schema';
 

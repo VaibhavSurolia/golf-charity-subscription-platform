@@ -32,9 +32,9 @@ export function PromoteButton({ userId, userEmail }: { userId: string, userEmail
   }
 
   return (
-    <Button 
-      variant="ghost" 
-      size="sm" 
+    <Button
+      variant="ghost"
+      size="sm"
       onClick={handlePromote}
       disabled={loading}
       className="h-8 text-rose-400 hover:text-rose-500 hover:bg-rose-500/10 gap-1.5"

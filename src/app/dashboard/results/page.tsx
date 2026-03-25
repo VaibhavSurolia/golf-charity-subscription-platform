@@ -1,17 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/Card";
-import { 
-  Trophy, 
-  TrendingUp, 
-  Calendar, 
-  Hash, 
-  ArrowRight, 
-  Loader2, 
-  Sparkles, 
-  Heart, 
-  Target 
+import {
+  Trophy,
+  TrendingUp,
+  Calendar,
+  Hash,
+  ArrowRight,
+  Loader2,
+  Sparkles,
+  Heart,
+  Target
 } from "lucide-react";
 import { WinnerClaimModal } from "@/components/dashboard/WinnerClaimModal";
+import { RealtimeWinnerListener } from "@/components/dashboard/RealtimeWinnerListener";
 import Link from "next/link";
 
 export default async function DrawResultsPage() {
@@ -45,6 +46,7 @@ export default async function DrawResultsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
+      {user && <RealtimeWinnerListener userId={user.id} />}
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Monthly Draw Results</h1>
         <p className="text-white/60 mt-1">Check if your scores matched this month's winning numbers.</p>
@@ -60,12 +62,12 @@ export default async function DrawResultsPage() {
           {/* Winning Numbers Header */}
           <Card className="p-8 relative overflow-hidden bg-emerald-500/5 border-emerald-500/20">
             <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-32 -mt-32" />
-            
+
             <div className="relative z-10 text-center space-y-6">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-widest">
                 <Sparkles size={14} /> Official {latestDraw.month} {latestDraw.year} Numbers
               </div>
-              
+
               <div className="flex justify-center gap-3 md:gap-6">
                 {latestDraw.winning_numbers.map((num: number, i: number) => (
                   <div key={i} className="h-14 w-14 md:h-20 md:w-20 rounded-2xl bg-black border-2 border-emerald-500/50 flex items-center justify-center text-2xl md:text-4xl font-black text-emerald-400 shadow-[0_0_30px_rgba(52,211,153,0.2)]">
@@ -77,15 +79,15 @@ export default async function DrawResultsPage() {
               <div className="flex justify-center items-center gap-6 md:gap-12 pt-4">
                 <div className="text-center">
                   <p className="text-xs text-white/40 uppercase tracking-widest mb-1">Monthly Revenue</p>
-                  <p className="text-xl font-bold text-white">${Number(latestDraw.total_pool).toLocaleString()}</p>
+                  <p className="text-xl font-bold text-white">₹{Number(latestDraw.total_pool).toLocaleString()}</p>
                 </div>
-                
+
                 {latestDraw.rollover_from_previous > 0 && (
                   <>
                     <div className="h-8 w-px bg-white/10" />
                     <div className="text-center">
                       <p className="text-xs text-rose-400 uppercase tracking-widest mb-1">Rollover Added</p>
-                      <p className="text-xl font-bold text-rose-400">+${Number(latestDraw.rollover_from_previous).toLocaleString()}</p>
+                      <p className="text-xl font-bold text-rose-400">+₹{Number(latestDraw.rollover_from_previous).toLocaleString()}</p>
                     </div>
                   </>
                 )}
@@ -94,7 +96,7 @@ export default async function DrawResultsPage() {
                 <div className="text-center">
                   <p className="text-xs text-emerald-400 uppercase tracking-widest mb-1">Charity Support</p>
                   <p className="text-xl font-bold text-emerald-400 flex items-center justify-center gap-1">
-                    <Heart size={16} fill="currentColor" /> ${Number(latestDraw.charity_pool).toLocaleString()}
+                    <Heart size={16} fill="currentColor" /> ₹{Number(latestDraw.charity_pool).toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -102,7 +104,7 @@ export default async function DrawResultsPage() {
               {latestDraw.rollover_amount > 0 && (
                 <div className="mt-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-center">
                   <p className="text-sm font-semibold text-rose-400 flex items-center justify-center gap-2">
-                    <TrendingUp size={16} /> NO JACKPOT WINNER this month! ${Number(latestDraw.rollover_amount).toLocaleString()} rolls over to next draw!
+                    <TrendingUp size={16} /> NO JACKPOT WINNER this month! ₹{Number(latestDraw.rollover_amount).toLocaleString()} rolls over to next draw!
                   </p>
                 </div>
               )}
@@ -115,7 +117,7 @@ export default async function DrawResultsPage() {
               <h3 className="text-lg font-semibold flex items-center gap-2">
                 <Target size={18} className="text-emerald-400" /> Your Matches
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
                   <span className="text-white/60">Number of Matches</span>
@@ -160,7 +162,7 @@ export default async function DrawResultsPage() {
                       }`}>
                         <Trophy size={40} />
                       </div>
-                      
+
                       <div>
                         <p className="text-2xl font-black text-white uppercase">
                           {record.verification_status === 'verified' ? "Verified Winner!" : "Tier Match!"}
@@ -179,32 +181,32 @@ export default async function DrawResultsPage() {
                         <p className={`text-4xl font-black ${
                            record.verification_status === 'verified' ? 'text-emerald-400' : 'text-yellow-400'
                         }`}>
-                          ${Number(record.prize_won).toLocaleString()}
+                          ₹{Number(record.prize_won).toLocaleString()}
                         </p>
                       </div>
 
                       {/* Status Messages */}
                       {(record.verification_status === 'pending' || (!record.verification_status && record.proof_url)) && record.proof_url && (
-                         <div className="space-y-3">
-                           <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-white/40 flex items-center justify-center gap-2">
-                             <Loader2 size={14} className="animate-spin" /> Verification Pending...
-                           </div>
-                           <a 
-                             href={record.proof_url} 
-                             target="_blank" 
-                             rel="noopener noreferrer"
-                             className="block text-center text-[10px] text-emerald-400/60 hover:text-emerald-400 transition-colors uppercase tracking-widest font-bold font-mono"
-                           >
-                             View Submitted Proof
-                           </a>
-                         </div>
+                        <div className="space-y-3 mt-6 pt-6 border-t border-white/5">
+                          <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-white/40 flex items-center justify-center gap-2">
+                            <Loader2 size={14} className="animate-spin" /> Verification Pending...
+                          </div>
+                          <a
+                            href={record.proof_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-center text-[10px] text-emerald-400/60 hover:text-emerald-400 transition-colors uppercase tracking-widest font-bold font-mono"
+                          >
+                            View Submitted Proof
+                          </a>
+                        </div>
                       )}
 
                       {record.verification_status === 'rejected' && (
-                         <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400 text-left">
-                           <p className="font-bold underline mb-1">Claim Rejected</p>
-                           <p>{record.admin_comment || "Proof mismatch. Contact support."}</p>
-                         </div>
+                        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-400 text-left">
+                          <p className="font-bold underline mb-1">Claim Rejected</p>
+                          <p>{record.admin_comment || "Proof mismatch. Contact support."}</p>
+                        </div>
                       )}
                     </Card>
 
