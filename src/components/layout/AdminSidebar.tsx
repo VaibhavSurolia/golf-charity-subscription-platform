@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Users, ServerIcon, DollarSign, LayoutDashboard, ShieldAlert } from "lucide-react";
+import { Users, ServerIcon, DollarSign, LayoutDashboard, ShieldAlert, Heart } from "lucide-react";
 
 export function AdminSidebar() {
   const links = [
@@ -30,6 +30,3 @@ export function AdminSidebar() {
     </aside>
   );
 }
-
-// Ensure Heart is imported above
-import { Heart } from "lucide-react";

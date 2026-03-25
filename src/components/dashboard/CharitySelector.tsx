@@ -11,6 +11,7 @@ interface Charity {
   name: string;
   description: string;
   website: string;
+  totalRaised?: number;
 }
 
 export function CharitySelector({ 
@@ -51,7 +52,7 @@ export function CharitySelector({
             }`}
           >
             {isSelected && (
-              <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-emerald-500 text-black flex items-center justify-center">
+              <div className="absolute top-4 right-4 h-6 w-6 rounded-full bg-emerald-500 text-black flex items-center justify-center z-10">
                 <Check size={14} strokeWidth={3} />
               </div>
             )}
@@ -65,7 +66,13 @@ export function CharitySelector({
               
               <div>
                 <h3 className="font-bold text-lg">{charity.name}</h3>
-                <p className="text-sm text-white/40 mt-1 leading-relaxed line-clamp-2">
+                <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[10px] font-black uppercase tracking-tighter bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md">
+                        Community: ${charity.totalRaised?.toLocaleString() || "0"} 
+                    </span>
+                    <p className="text-[10px] text-white/30 uppercase tracking-widest font-bold">Raised</p>
+                </div>
+                <p className="text-sm text-white/40 mt-3 leading-relaxed line-clamp-2">
                   {charity.description}
                 </p>
               </div>

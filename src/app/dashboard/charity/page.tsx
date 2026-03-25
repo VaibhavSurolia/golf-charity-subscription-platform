@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { CharitySelector } from "@/components/dashboard/CharitySelector";
-import { Heart, Info } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { Heart, Info, Globe } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -8,18 +9,38 @@ export default async function CharityPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  // 1. Fetch User Profile
+  // 1. Fetch User Profile & Sub Date
   const { data: profile } = await supabase
     .from("users")
-    .select("charity_id")
+    .select("charity_id, created_at")
     .eq("id", user?.id)
     .single();
 
-  // 2. Fetch All Charities
-  const { data: charities } = await supabase
+  // 2. Fetch All Charities with Payout totals
+  const { data: charitiesData } = await supabase
     .from("charities")
-    .select("*")
+    .select(`
+      *,
+      charity_payouts (
+        amount
+      )
+    `)
     .order("name", { ascending: true });
+
+  // 3. Calculate Global Stats
+  const charities = charitiesData?.map((c: any) => ({
+    ...c,
+    totalRaised: c.charity_payouts.reduce((acc: number, p: any) => acc + Number(p.amount), 0)
+  })) || [];
+
+  const communityTotal = charities.reduce((acc, c) => acc + c.totalRaised, 0);
+
+  // 4. Calculate Personal Impact (Estimation)
+  // Logic: $0.50 per month since subscription started (or account created as proxy)
+  const createdDate = new Date(profile?.created_at || Date.now());
+  const now = new Date();
+  const monthsActive = Math.max(1, (now.getFullYear() - createdDate.getFullYear()) * 12 + now.getMonth() - createdDate.getMonth() + 1);
+  const personalImpact = monthsActive * 0.50;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8">
@@ -33,8 +54,40 @@ export default async function CharityPage() {
         
         <div className="inline-flex items-center gap-2 p-3 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/40">
            <Info size={14} className="text-emerald-400" />
-           You can change your selection at any time.
+           Your selection supports our community goals.
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Personal Impact Card */}
+        <Card className="p-6 border-white/5 bg-gradient-to-br from-emerald-500/10 to-transparent relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-500/10 transition-colors" />
+            <div className="flex items-start justify-between relative z-10">
+                <div>
+                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Your Personal Impact</p>
+                    <h3 className="text-4xl font-black text-white">${personalImpact.toFixed(2)}</h3>
+                    <p className="text-[10px] text-emerald-400/60 font-medium mt-1">Generated from {monthsActive} months of active subscription</p>
+                </div>
+                <div className="h-10 w-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <Heart size={20} fill="currentColor" />
+                </div>
+            </div>
+        </Card>
+
+        {/* Global Impact Card */}
+        <Card className="p-6 border-white/5 bg-gradient-to-br from-blue-500/10 to-transparent relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-blue-500/10 transition-colors" />
+            <div className="flex items-start justify-between relative z-10">
+                <div>
+                    <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-1">Community Total Raised</p>
+                    <h3 className="text-4xl font-black text-white">${communityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</h3>
+                    <p className="text-[10px] text-blue-400/60 font-medium mt-1">Total live contributions across all humanitarian partners</p>
+                </div>
+                <div className="h-10 w-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
+                    <Globe size={20} />
+                </div>
+            </div>
+        </Card>
       </div>
 
       {!charities || charities.length === 0 ? (
@@ -47,20 +100,6 @@ export default async function CharityPage() {
           currentColorId={profile?.charity_id || null} 
         />
       )}
-
-      {/* Impact Stats Placeholder */}
-      <div className="p-8 rounded-3xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-white/5 flex flex-col items-center text-center space-y-4">
-         <div className="h-12 w-12 rounded-full bg-white/10 flex items-center justify-center text-emerald-400">
-            <Heart size={24} fill="currentColor" />
-         </div>
-         <div className="max-w-md">
-            <h4 className="text-lg font-bold">Your 10% Contribution</h4>
-            <p className="text-sm text-white/40 mt-1">
-              Every month, $0.50 of your $5.00 subscription goes directly to your chosen partner. (Using $20 ticket model? $2.00 donation). 
-              Our community has raised over $12,500 so far this year!
-            </p>
-         </div>
-      </div>
     </div>
   );
 }
