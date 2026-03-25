@@ -14,21 +14,8 @@ export async function Navbar() {
           <span className="bg-gradient-to-r from-emerald-400 to-indigo-500 bg-clip-text text-transparent">Nexus</span> Golf
         </Link>
         
-        <div className="hidden space-x-8 md:flex">
-          <Link href="/how-it-works" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
-            How it Works
-          </Link>
-          <Link href="/charity" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
-            Impact
-          </Link>
-          <Link href="/prizes" className="text-sm font-medium text-white/70 transition-colors hover:text-white">
-            Prize Pool
-          </Link>
-          {user && (
-            <Link href="/dashboard" className="text-sm font-medium text-emerald-400 transition-colors hover:text-emerald-300">
-              Dashboard
-            </Link>
-          )}
+        <div className="hidden md:flex">
+          {/* Main navigation removed for minimalist design */}
         </div>
 
         <div className="flex items-center gap-4">

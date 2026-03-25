@@ -74,9 +74,14 @@ export default async function DashboardPage() {
 
   const charityTotal = causePayouts?.reduce((acc, p) => acc + Number(p.amount), 0) || 0;
 
+  // 7. Calculate days until next draw (1st of next month)
+  const nextDrawDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  const diffTime = nextDrawDate.getTime() - now.getTime();
+  const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      {/* ... (Welcome header and stats cards remain the same) ... */}
+      {/* Welcome header section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Welcome back, {firstName}</h1>
@@ -141,7 +146,7 @@ export default async function DashboardPage() {
               <p className="text-sm text-white/60 mb-1">Next Draw Status</p>
               {isSubscribed ? (
                 <>
-                  <h3 className="text-xl font-semibold text-white">Awaiting Number Gen</h3>
+                  <h3 className="text-xl font-semibold text-white">{daysRemaining} Days Remaining</h3>
                   <p className="text-xs text-emerald-400 mt-2">Your entry is active</p>
                 </>
               ) : (
@@ -158,7 +163,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-3 items-start">
         {/* RECENT SCORES PANEL */}
         <Card className="p-6 md:col-span-2 relative min-h-[300px]">
           <div className="flex items-center justify-between mb-6 relative z-10">
@@ -208,44 +213,46 @@ export default async function DashboardPage() {
         </Card>
 
         {/* CHARITY PANEL */}
-        <Card className="p-6 relative overflow-hidden flex flex-col justify-between">
+        <Card className="p-6 pb-2 relative overflow-hidden flex flex-col">
           <div className="absolute -bottom-10 -right-10 opacity-10">
             <Heart size={120} />
           </div>
-          <div className="relative z-10">
-            <h3 className="text-lg font-semibold mb-2">Charity Impact</h3>
-            <p className="text-sm text-white/60 mb-2">Your impact so far:</p>
-            <div className="flex flex-col gap-1 mb-6">
-              <div className="flex items-end gap-2">
-                <span className="text-3xl font-black text-emerald-400 font-mono">₹{personalImpact.toFixed(2)}</span>
-                <span className="text-[10px] text-white/40 mb-1.5 uppercase tracking-tighter">Personal Impact</span>
+          <div className="relative z-10 flex-1 flex flex-col justify-between">
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2">Charity Impact</h3>
+              <p className="text-sm text-white/60 mb-2">Your impact so far:</p>
+              <div className="flex flex-col gap-1 mb-6">
+                <div className="flex items-end gap-2">
+                  <span className="text-3xl font-black text-emerald-400 font-mono">₹{personalImpact.toFixed(2)}</span>
+                  <span className="text-[10px] text-white/40 mb-1.5 uppercase tracking-tighter">Personal Impact</span>
+                </div>
+                <div className="flex items-end gap-2">
+                  <span className="text-xl font-bold text-blue-400 font-mono">₹{charityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+                  <span className="text-[10px] text-white/40 mb-1 uppercase tracking-tighter">Raised for this Cause</span>
+                </div>
               </div>
-              <div className="flex items-end gap-2">
-                <span className="text-xl font-bold text-blue-400 font-mono">₹{charityTotal.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
-                <span className="text-[10px] text-white/40 mb-1 uppercase tracking-tighter">Raised for this Cause</span>
-              </div>
-            </div>
 
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
-              {selectedCharity ? (
-                <>
-                  <h4 className="font-bold text-emerald-400">{selectedCharity.name}</h4>
-                  <p className="text-xs text-white/50 mt-1 line-clamp-2">{selectedCharity.description}</p>
-                </>
-              ) : (
-                <>
-                  <h4 className="font-bold text-rose-400 italic">No Charity Selected</h4>
-                  <p className="text-xs text-white/40 mt-1 italic">Click below to select your cause!</p>
-                </>
-              )}
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                {selectedCharity ? (
+                  <>
+                    <h4 className="font-bold text-emerald-400 uppercase tracking-wide text-xs">Current Choice</h4>
+                    <p className="text-sm text-white font-medium mt-1">{selectedCharity.name}</p>
+                  </>
+                ) : (
+                  <>
+                    <h4 className="font-bold text-rose-400 italic">No Charity Selected</h4>
+                    <p className="text-xs text-white/40 mt-1 italic">Click below to select your cause!</p>
+                  </>
+                )}
+              </div>
             </div>
+            
+            <Link href="/dashboard/charity" className="mb-2">
+              <Button variant="outline" className="w-full relative z-10 border-white/10 hover:bg-white/10 h-11">
+                {selectedCharity ? "Change Charity" : "Select a Charity"}
+              </Button>
+            </Link>
           </div>
-
-          <Link href="/dashboard/charity">
-            <Button variant="outline" className="w-full relative z-10 border-white/10 hover:bg-white/10 h-11">
-              {selectedCharity ? "Change Charity" : "Select a Charity"}
-            </Button>
-          </Link>
         </Card>
       </div>
     </div>

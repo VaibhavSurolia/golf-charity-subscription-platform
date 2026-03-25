@@ -12,7 +12,7 @@ import {
   Clock,
   Trophy
 } from "lucide-react";
-import { SimulateDrawButton } from "@/components/admin/SimulateDrawButton";
+import { OfficialDrawButton } from "@/components/admin/OfficialDrawButton";
 import { AdminUserList } from "@/components/admin/AdminUserList";
 import Link from "next/link";
 
@@ -62,7 +62,7 @@ export default async function AdminPage() {
           <p className="text-white/40 mt-1 font-medium italic">Golf Charity Subscription Engine v1.0</p>
         </div>
         
-        <SimulateDrawButton />
+        <OfficialDrawButton />
       </div>
 
       {/* QUICK STATS */}

@@ -6,7 +6,7 @@ import { PlayCircle, Loader2, Sparkles, Settings2, X } from "lucide-react";
 import { processMonthlyDraw } from "@/app/admin/draws/actions";
 import { toast } from "sonner";
 
-export function SimulateDrawButton() {
+export function OfficialDrawButton() {
   const [loading, setLoading] = useState(false);
   const [manualMode, setManualMode] = useState(false);
   const [manualNumbers, setManualNumbers] = useState(["", "", "", "", ""]);
@@ -42,7 +42,7 @@ export function SimulateDrawButton() {
     try {
       const result = await processMonthlyDraw(numbers);
       if (result.success) {
-        toast.success("Draw Completed!", {
+        toast.success("Official Draw Completed!", {
           description: `Winning Numbers: ${result.numbers.join(", ")}. Found ${result.winnersCount} winners. Total Pool: ₹${result.pool.toLocaleString()}`,
           icon: <Sparkles className="text-emerald-400" />,
           duration: 10000,
@@ -91,6 +91,7 @@ export function SimulateDrawButton() {
           variant="outline"
           className={`px-3 border-white/10 ${manualMode ? "bg-white/10" : ""}`}
           disabled={loading}
+          title="Manual Override (Test Mode)"
         >
           <Settings2 size={16} />
         </Button>
@@ -98,16 +99,16 @@ export function SimulateDrawButton() {
         <Button
           onClick={handleSimulate}
           disabled={loading}
-          className="bg-rose-500 hover:bg-rose-600 text-white gap-2 border-0 shadow-lg shadow-rose-500/20 px-6"
+          className="bg-rose-500 hover:bg-rose-600 text-white gap-2 border-0 shadow-lg shadow-rose-500/20 px-6 font-bold"
         >
           {loading ? <Loader2 size={16} className="animate-spin" /> : <PlayCircle size={16} />}
-          {loading ? "Processing..." : manualMode ? "Run Manual Draw" : "Simulate Random Draw"}
+          {loading ? "Processing..." : manualMode ? "Process Manual Draw" : "Run Official Monthly Draw"}
         </Button>
       </div>
 
       {manualMode && (
         <p className="text-[10px] text-white/40 uppercase tracking-widest font-bold">
-          Manual Override Enabled (Test Mode)
+          Manual Override Enabled (Admin Testing)
         </p>
       )}
     </div>
