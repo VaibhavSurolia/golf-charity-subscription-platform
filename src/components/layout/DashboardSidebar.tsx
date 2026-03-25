@@ -5,7 +5,6 @@ import {
   Target, 
   Heart, 
   Trophy, 
-  Settings, 
   LogOut, 
   Server,
   CreditCard 
@@ -49,13 +48,6 @@ export async function DashboardSidebar() {
       </nav>
       
       <div className="border-t border-white/10 pt-4 space-y-2 mt-auto">
-        <Link
-          href="/dashboard/settings"
-          className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-        >
-          <Settings size={20} />
-          Settings
-        </Link>
         <form action={logout}>
           <button
             type="submit"

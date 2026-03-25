@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 import NextTopLoader from 'nextjs-toploader';
 
 import { Toaster } from 'sonner';
+import { Analytics } from "@vercel/analytics/react";
 
 export default function RootLayout({
   children,
@@ -32,6 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <Toaster position="top-center" richColors />
+        <Analytics />
         <NextTopLoader
           color="#34d399"
           initialPosition={0.08}
