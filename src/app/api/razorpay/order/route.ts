@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { razorpay } from '@/lib/razorpay';
+import { getRazorpay } from '@/lib/razorpay';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(req: Request) {
@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       },
     };
 
+    const razorpay = getRazorpay();
     const order = await razorpay.orders.create(options);
 
     return NextResponse.json(order);
